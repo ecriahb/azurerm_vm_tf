@@ -8,48 +8,51 @@ on:
   pull_request:
     branches:
       - main
-jobs: 
-    terraform:
-        name: terraform workflow
-        runs-on: ubuntu-latest
 
-        permissions:
-            contents: read
-            pull-requests: write
-            id-token: write
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+jobs:
+  terraform:
+    name: terraform workflow
+    runs-on: ubuntu-latest
 
-            - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v1
-              with:
-                terraform_version: 1.5.0
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
 
-            - name: login to Azure
-              uses: azure/login@v1
-              with:
-               creds: ${{ secrets.AZURE_CREDENTIALS }}
-            
-            - name: Terraform Init
-              run: terraform init
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Terraform validate
-              run: terraform validate
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.0
 
-            - name: Terraform Plan
-              id: tf-plan
-              run: terraform plan -out=tfplan
-              env:
-                clientId: ${{ secrets.AZURE_CLIENT_ID }}
-                clientSecret: ${{ secrets.AZURE_CLIENT_SECRET }}
-                tenantId: ${{ secrets.AZURE_TENANT_ID }}
+      - name: login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-            - name: Terraform Apply
-              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-              run: terraform apply -auto-approve tfplan
-              env:
-                clientId: ${{ secrets.AZURE_CLIENT_ID }}
-                clientSecret: ${{ secrets.AZURE_CLIENT_SECRET }}
-                tenantId: ${{ secrets.AZURE_TENANT_ID }}
+      - name: Terraform Init
+        run: terraform init
 
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: tf-plan
+        run: terraform plan -out=tfplan
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
