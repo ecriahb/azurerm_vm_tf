@@ -1,11 +1,10 @@
-
 resource "azurerm_resource_group" "rg" {
   name     = "AngularJS-RG-CentralIndia"
   location = "Central India"
 }
 
 resource "azurerm_public_ip" "pip" {
-  name                = "acceptanceTestPublicIp1"
+  name                = "AngularJS-RG-PublicIP"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   allocation_method   = "Static"
@@ -33,10 +32,12 @@ resource "azurerm_network_interface" "nic" {
   name                = "AngularJS-RG-NIC"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+
   ip_configuration {
     name                          = "AngularJS-RG-IPC"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip.id
   }
 }
 
