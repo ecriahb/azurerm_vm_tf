@@ -27,6 +27,12 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.5.0
+      - name: Debug Azure Credentials
+        run: |
+            echo "Client ID: $AZURE_CLIENT_ID"
+            echo "Tenant ID: $AZURE_TENANT_ID"
+            echo "Subscription ID: $AZURE_SUBSCRIPTION_ID"
+        
 
       - name: Login to Azure
         uses: azure/login@v1
