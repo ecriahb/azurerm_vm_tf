@@ -38,11 +38,7 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          creds: |
-            AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}
-            AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}
-            AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}
-            AZURE_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Terraform Init
         run: terraform init -backend-config=environments/dev/provider.tf
@@ -56,8 +52,18 @@ jobs:
         id: tf-plan
         run: terraform plan -out=tfplan -var-file=environments/dev/terraform.tfvars
         working-directory: environments/dev
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
         working-directory: environments/dev
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
