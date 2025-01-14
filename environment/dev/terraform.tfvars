@@ -23,12 +23,12 @@ subnet = {
     address_prefixes = ["10.0.0.0/24"]
   }
 
-  sbnet1 = {
+  sbnet2 = {
     sbnet_name       = "sbnet2"
     rg_name          = "RG-Splunk"
     location         = "CentralIndia"
     vnet_name        = "vnet-B"
-    address_prefixes = ["10.0.1.0/16"]
+    address_prefixes = ["10.0.1.0/24"]
   }
 }
 
