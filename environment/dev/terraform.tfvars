@@ -45,7 +45,7 @@ vms = {
   }
     vm2 = {
     pip_name   = "PIP-B"
-    rg_name    = "RG-Splunkfwd"
+    rg_name    = "RG-Splunk"
     location   = "CentralIndia"
     nic_name   = "nic-B"
     vm_name    = "VM-Splunk"
