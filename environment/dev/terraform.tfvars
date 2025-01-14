@@ -44,7 +44,7 @@ vms = {
     vnet_name  = "vnet-B"
   }
     vm2 = {
-    pip_name   = "PIP-B"
+    pip_name   = "PIP-B1"
     rg_name    = "RG-Splunk"
     location   = "CentralIndia"
     nic_name   = "nic-B"
