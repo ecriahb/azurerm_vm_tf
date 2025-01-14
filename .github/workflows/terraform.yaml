@@ -34,14 +34,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config=environments/dev/provider.tf
+        working-directory: environments/dev
 
-      - name: Terraform validate
+      - name: Terraform Validate
         run: terraform validate
+        working-directory: environments/dev
 
       - name: Terraform Plan
         id: tf-plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplan -var-file=environments/dev/terraform.tfvars
+        working-directory: environments/dev
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -51,6 +54,7 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
+        working-directory: environments/dev
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
