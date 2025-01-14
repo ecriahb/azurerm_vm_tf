@@ -5,7 +5,6 @@ data "azurerm_subnet" "subnet" {
   resource_group_name  = each.value.rg_name
 }
 
-
 resource "azurerm_public_ip" "pip" {
   for_each            = var.vm
   name                = each.value.pip_name
@@ -20,13 +19,12 @@ resource "azurerm_network_interface" "nic" {
   location            = each.value.location
   resource_group_name = each.value.rg_name
 
-  dynamic "ip_configuration" {
-    for_each = var.vm
-    content {
-      name                          = "internal"
-      subnet_id                     = data.azurerm_subnet.subnet[each.key].id
-      private_ip_address_allocation = "Dynamic"
-    }
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = data.azurerm_subnet.subnet[each.key].id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip[each.key].id
+    primary                       = true
   }
 }
 
@@ -40,7 +38,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
   admin_password                  = "Admin@12345"
   network_interface_ids           = [azurerm_network_interface.nic[each.key].id]
   disable_password_authentication = false
-
 
   os_disk {
     caching              = "ReadWrite"
